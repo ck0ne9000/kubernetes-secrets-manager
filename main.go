@@ -13,13 +13,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func main() {
-	if _, err := tea.NewProgram(initialModel(), tea.WithAltScreen()).Run(); err != nil {
-		fmt.Println("Error running program:", err)
-		os.Exit(1)
-	}
-}
-
 type (
 	state    int
 	errorMsg error
@@ -105,4 +98,16 @@ func (m model) View() string {
 		) + "\n"
 	}
 	return "no view found"
+}
+
+func main() {
+	if err := checkSopsInstalled(); err != nil {
+		fmt.Printf("SOPS not installed, please install sops first.\n")
+		os.Exit(1)
+	}
+
+	if _, err := tea.NewProgram(initialModel(), tea.WithAltScreen()).Run(); err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
+	}
 }
