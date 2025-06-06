@@ -3,20 +3,24 @@ package main
 import (
 	"fmt"
 	"os/exec"
-	"path"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+func checkSopsInstalled() error {
+	cmd := exec.Command("sops", "--version")
+	_, err := cmd.CombinedOutput()
+	return err
+}
+
 // sops --config .sops.yaml -e --in-place secretFilePath
 func encryptFileWithSops(secretName string) tea.Cmd {
-	filePath := path.Join(path.Dir(""), ".sops.yaml")
 	fileName := fmt.Sprintf("%s.yaml", secretName)
 	return func() tea.Msg {
-		cmd := exec.Command("sops", "--config", filePath, "-e", "--in-place", fileName)
+		cmd := exec.Command("sops", "-e", "--in-place", fileName)
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			fmt.Println(string(out))
+			fmt.Println(err)
 		}
 		return out
 	}
